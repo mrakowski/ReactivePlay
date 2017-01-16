@@ -118,7 +118,7 @@ class ViewController: UIViewController {
         }
         
         let (signal, observer) = Signal<Int, IntError>.pipe()
-        signal.observeResult { (result) in
+        let disposable = signal.observeResult { (result) in
             if let x = result.value {
                 print(x)
             }
@@ -141,7 +141,9 @@ class ViewController: UIViewController {
         }
         
         observer.send(value: 10)
-        observer.send(error: .SomeErrorHappened)
+        //observer.send(error: .SomeErrorHappened)
+        //observer.sendCompleted()
+        disposable?.dispose()
         observer.send(value: 5)
     }
     

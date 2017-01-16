@@ -26,11 +26,16 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //let searchStrings = self.textField.reactive.continuousTextValues
-        //self.textField.reactive.continuousTextValues.map { $0?.characters.count }
-        //let appearing = view.reactive.trigger(for: #selector(viewWillAppear(_:)))
+        self.mapFilterEx()
+
+        self.signalsEx()
         
-        
+    }
+    
+    // MARK:
+    
+    func mapFilterEx() {
+    
         // Transforming - Map
         var buffer :String
         buffer = sectionStr(sectionName: "Transforming - map")
@@ -83,14 +88,14 @@ class ViewController: UIViewController {
             .combineLatest(with: lettersToCombineSignal)
             .observe { combinedEvent -> () in
                 switch combinedEvent {
-                    case let .value(number, letter):
-                        buffer = buffer + "number: " + String(number) + " letter: " + String(letter) + "\n"
-                    case .failed:
-                        buffer = buffer + "failed\n"
-                    case .completed:
-                        buffer = buffer + "completed\n"
-                    case .interrupted:
-                        buffer = buffer + "interrupted\n"
+                case let .value(number, letter):
+                    buffer = buffer + "number: " + String(number) + " letter: " + String(letter) + "\n"
+                case .failed:
+                    buffer = buffer + "failed\n"
+                case .completed:
+                    buffer = buffer + "completed\n"
+                case .interrupted:
+                    buffer = buffer + "interrupted\n"
                 }
         }
         numbersToCombineObserver.send(value: 0)      // nothing printed, no letter yet
@@ -99,20 +104,25 @@ class ViewController: UIViewController {
         numbersToCombineObserver.send(value: 2)      // prints (2, A)
         numbersToCombineObserver.sendCompleted() // nothing printed
         lettersToCombineObserver.send(value: "B")    // prints (2, B)
-        lettersToCombineObserver.send(value: "C")    // prints (2, C) 
+        lettersToCombineObserver.send(value: "C")    // prints (2, C)
         lettersToCombineObserver.sendCompleted()  // prints completed
         print(buffer)
-
-        
     }
     
- 
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func signalsEx() {
+    
+        let (signal, observer) = Signal<Int, NoError>.pipe()
+        signal.observeValues { number in
+            let x = number
+            print(x)
+        }
+        signal.observeValues { number in
+            let x = 1.0 / Float(number)
+            print(x)
+        }
+        observer.send(value: 10)
+        observer.send(value: 5)
     }
-
-
+    
 }
 

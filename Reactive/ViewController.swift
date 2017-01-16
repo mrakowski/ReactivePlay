@@ -111,16 +111,37 @@ class ViewController: UIViewController {
     
     func signalsEx() {
     
-        let (signal, observer) = Signal<Int, NoError>.pipe()
-        signal.observeValues { number in
-            let x = number
-            print(x)
+        // http://mfclarke.github.io/2016/04/23/introduction-to-reactive-cocoa-4/
+        
+        enum IntError: Error {
+            case SomeErrorHappened
         }
-        signal.observeValues { number in
-            let x = 1.0 / Float(number)
-            print(x)
+        
+        let (signal, observer) = Signal<Int, IntError>.pipe()
+        signal.observeResult { (result) in
+            if let x = result.value {
+                print(x)
+            }
         }
+        
+        signal.observeResult { (result) in
+            if let val = result.value {
+                let x = 1.0 / Float(val)
+                print(x)
+            }
+        }
+        
+        signal.observe { (event) in
+            //print(event.value)
+        }
+        
+        signal.observeFailed { (error) in
+            let e = error
+            print(e)
+        }
+        
         observer.send(value: 10)
+        observer.send(error: .SomeErrorHappened)
         observer.send(value: 5)
     }
     

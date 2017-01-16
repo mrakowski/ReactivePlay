@@ -30,9 +30,11 @@ class ViewController: UIViewController {
 
         self.signalsEx()
         
+        self.operators()
+        
     }
     
-    // MARK:
+    // MARK: Examples
     
     func mapFilterEx() {
     
@@ -147,5 +149,27 @@ class ViewController: UIViewController {
         observer.send(value: 5)
     }
     
+    func mutableProperties() {
+    }
+    
+    func bindings() {
+    }
+    
+    func operators() {
+    
+        let dogString = "dog"
+        
+        let (stringSignal, stringObserver) = Signal<String, NoError>.pipe()
+        stringSignal.filter { (string) -> Bool in
+            string.contains(dogString)
+        }
+        .observeValues { (stringContainingDog) in
+            let x = stringContainingDog
+            print(x)
+        }
+        stringObserver.send(value: "Wendy has a cat")
+        stringObserver.send(value: "I have a dog")
+        stringObserver.send(value: "Tom has a mexican flying fish")
+    }
 }
 
